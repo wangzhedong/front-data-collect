@@ -24,8 +24,7 @@
       </el-aside>
       <el-container>
         <el-main class="app-page-body">
-          <div class="page-header" style="margin-left:10px;">
-            <h1 class="page-title">XXX</h1>
+          <div class="page-header">
             <el-breadcrumb>
               <el-breadcrumb-item :to="{path: '/'}">首页</el-breadcrumb-item>
               <el-breadcrumb-item>Table表格数据</el-breadcrumb-item>
@@ -117,6 +116,9 @@ body{
         padding: 0px;
         height: 100%;
         margin-left: 10px;
+        .page-header{
+          margin: 20px 20px;
+        }
     }
 }
 

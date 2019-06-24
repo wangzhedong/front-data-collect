@@ -39,8 +39,7 @@
         style="width: 100%;min-height:300px"
       >
         <el-table-column type="selection" width="55" label="全选"></el-table-column>
-        <el-table-column prop="loginName" label="登录名"></el-table-column>
-        <el-table-column prop="uname" label="用户名"></el-table-column>
+        <el-table-column prop="userName" label="用户名"></el-table-column>
         <el-table-column prop="uemail" label="邮箱"></el-table-column>
         <el-table-column prop="tel" label="电话"></el-table-column>
         <el-table-column label="角色">
@@ -126,24 +125,13 @@
         label-width="100px"
         style="padding: 0 20px"
       >
-        <div>
-          <el-form-item v-if="!userInfo.id" label="登录名" prop="loginName">
-            <el-input
-              maxlength="16"
-              type="text"
-              size="small"
-              placeholder="请输入登录名"
-              v-model="userInfo.loginName"
-            ></el-input>
-          </el-form-item>
-        </div>
-        <el-form-item label="用户名" prop="uname">
+        <el-form-item label="用户名" prop="userName">
           <el-input
             maxlength="16"
             type="text"
             size="small"
             placeholder="请输入用户名"
-            v-model="userInfo.uname"
+            v-model="userInfo.userName"
           ></el-input>
         </el-form-item>
         <el-form-item label="邮箱" prop="uemail">
@@ -174,7 +162,7 @@
 </template>
 
 <script>
-//import {arrDeepCopy} from "../common/js/utils";
+import {deepCopy} from "../utils/tools";
 
 export default {
     name: 'User',
@@ -193,19 +181,7 @@ export default {
             userModel: false,
             userInfo: {},
             rules: {
-                loginName: [
-                    {
-                        required: true,
-                        message: '请输入登录名',
-                        trigger: 'blur',
-                    },
-                    {
-                        pattern: /^\S+$/,
-                        message: '用户名必须为非空字符串',
-                        trigger: 'blur',
-                    },
-                ],
-                uname: [
+                userName: [
                     {
                         required: true,
                         message: '请输入用户名',
@@ -249,8 +225,8 @@ export default {
         },
     },
     mounted() {
-        /** this.getUsers();
-      this.$api.get('/role/all', '', res => {
+      this.getUsers();
+      /**this.$api.get('/role/all', '', res => {
         this.allRoles = res;
       }, fal => {
         this.$message.error(fal)
@@ -264,15 +240,16 @@ export default {
         },
         getUsers() {
             this.$api.get(
-                '/sysuser/queryByPage',
+                '/sysUser/queryByPage',
                 {
                     pageSize: 10,
                     pageIndex: this.currentPage,
                     search: this.searchStr,
                 },
                 res => {
-                    if (res.result) {
-                        this.tableData = res.result;
+                  console.log("res",res);
+                    if (res.records) {
+                        this.tableData = res.records;
                         this.total = res.totalCount;
                     }
                 },
@@ -295,9 +272,9 @@ export default {
                     });
                     this.checkedRoles = c;
                 }
-                this.editItem = [arrDeepCopy(items)];
+                this.editItem = [deepCopy(items)];
             } else {
-                this.editItem = arrDeepCopy(items);
+                this.editItem = deepCopy(items);
             }
         },
         editUser(data) {
@@ -342,7 +319,7 @@ export default {
                         );
                     } else {
                         this.$api.post(
-                            '/sysuser/add',
+                            '/sysUser/add',
                             this.userInfo,
                             success => {
                                 this.$message.success(success);
@@ -385,7 +362,8 @@ export default {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning',
-            }).then(() => {
+            })
+                .then(() => {
                     this.$api.get(
                         '/sysuser/del',
                         { id: data.id },
