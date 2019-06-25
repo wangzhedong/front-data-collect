@@ -1,66 +1,65 @@
 <template>
   <div>
-    <el-row>
-      <el-row style="padding: 10px 20px">
-        <el-col :span="12">
-          <el-button
-            type="primary"
-            @click="edit(checkedUser)"
-            :disabled="checkedUser.length<=0"
-          >批量绑定角色</el-button>
-          <el-button type="primary" @click="editUser">新增用户</el-button>
-        </el-col>
-        <el-col :span="12" style="text-align: right">
-          <el-input
-            style="width: 160px"
-            size="small"
-            @keyup.enter.native="search"
-            clearable
-            prefix-icon="el-icon-search"
-            placeholder="搜索登录名"
-            v-model="searchText"
-          ></el-input>
-          <el-button
-            size="small"
-            icon="el-icon-search"
-            title="搜索"
-            circle
-            type="primary"
-            @click="search"
-          ></el-button>
-        </el-col>
-      </el-row>
-      <el-table
-        ref="userTable"
-        @selection-change="handleSelectionChange"
-        class="usersTable"
-        stripe
-        :data="tableData"
-        style="width: 100%;min-height:300px"
-      >
-        <el-table-column type="selection" width="55" label="全选"></el-table-column>
-        <el-table-column prop="userName" label="用户名"></el-table-column>
-        <el-table-column prop="uemail" label="邮箱"></el-table-column>
-        <el-table-column prop="tel" label="电话"></el-table-column>
-        <el-table-column label="角色">
-          <template slot-scope="scope">
-            <span
-              style="display: inline-block;margin: 2px 3px"
-              v-for="role in scope.row.roleIds"
-              :key="role.loginName"
-            >{{role.roleName}}</span>
-          </template>
-        </el-table-column>
-        <el-table-column fixed="right" label="操作" width="360px">
-          <template slot-scope="scope">
-            <el-button type="text" @click="edit(scope.row)" size="small">修改绑定角色</el-button>
-            <el-button type="text" @click="editUser(scope.row)" size="small">修改用户信息</el-button>
-            <el-button type="text" @click="resetPassword(scope.row)" size="small">重置密码</el-button>
-            <el-button type="text" @click="delUser(scope.row)" size="small">删除</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
+    <el-row style="padding: 0px 10px">
+      <el-col :span="12">
+        <el-button
+          type="primary"
+          size="medium"
+          @click="edit(checkedUser)"
+          :disabled="checkedUser.length<=0"
+        >批量绑定角色</el-button>
+        <el-button type="primary" size="medium" @click="editUser">新增用户</el-button>
+      </el-col>
+      <el-col :span="5" :offset="7">
+        <el-input
+          style="width: 160px"
+          size="small"
+          @keyup.enter.native="search"
+          clearable
+          prefix-icon="el-icon-search"
+          placeholder="搜索登录名"
+          v-model="searchText"
+        ></el-input>
+        <el-button
+          size="small"
+          icon="el-icon-search"
+          title="搜索"
+          circle
+          type="primary"
+          @click="search"
+        ></el-button>
+      </el-col>
     </el-row>
+    <el-table
+      ref="userTable"
+      @selection-change="handleSelectionChange"
+      stripe
+      height="350"
+      :data="tableData"
+      style="width: 100%;"
+    >
+      <el-table-column type="selection" width="55" label="全选"></el-table-column>
+      <el-table-column prop="userName" label="用户名"></el-table-column>
+      <el-table-column prop="uemail" label="邮箱"></el-table-column>
+      <el-table-column prop="tel" label="电话"></el-table-column>
+      <el-table-column label="角色">
+        <template slot-scope="scope">
+          <span
+            style="display: inline-block;margin: 2px 3px"
+            v-for="role in scope.row.roleIds"
+            :key="role.loginName"
+          >{{role.roleName}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column fixed="right" label="操作" width="360px">
+        <template slot-scope="scope">
+          <el-button type="text" @click="edit(scope.row)" size="small">修改绑定角色</el-button>
+          <el-button type="text" @click="editUser(scope.row)" size="small">修改用户信息</el-button>
+          <el-button type="text" @click="resetPassword(scope.row)" size="small">重置密码</el-button>
+          <el-button type="text" @click="delUser(scope.row)" size="small">删除</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
     <el-pagination
       v-if="total>10"
       @current-change="pageChange"
@@ -80,7 +79,7 @@
             style="padding: 5px"
             v-for="user in editItem"
             :key="user.id"
-          >{{user?user.uname:''}}</span>
+          >{{user ? user.userName: ''}}</span>
         </div>
         <!-- <div class="form-item">当前已选：
           <div style="transition: all .5s" v-if="!!editItem">
@@ -162,7 +161,7 @@
 </template>
 
 <script>
-import {deepCopy} from "../utils/tools";
+import { deepCopy } from '../utils/tools';
 
 export default {
     name: 'User',
@@ -226,11 +225,12 @@ export default {
     },
     mounted() {
       this.getUsers();
-      /**this.$api.get('/role/all', '', res => {
+      this.$api.get('/sysRole/queryAll', '', res => {
+        console.log('res',res);
         this.allRoles = res;
       }, fal => {
         this.$message.error(fal)
-      })*/
+      })
     },
     methods: {
         search() {
@@ -247,10 +247,9 @@ export default {
                     search: this.searchStr,
                 },
                 res => {
-                  console.log("res",res);
                     if (res.records) {
                         this.tableData = res.records;
-                        this.total = res.totalCount;
+                        this.total = res.total;
                     }
                 },
                 fal => {

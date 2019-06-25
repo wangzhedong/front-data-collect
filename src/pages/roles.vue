@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-row style="margin-bottom: 10px;padding-left: 10px">
-      <el-button icon="el-icon-plus" @click="edit">新增</el-button>
+      <el-button icon="el-icon-plus" type="primary" @click="edit">新增</el-button>
     </el-row>
     <el-row>
       <el-table class="roleTable" stripe :data="tableData" style="width: 100%">
@@ -100,7 +100,7 @@
     },
     mounted() {
       //this.getMenuList();
-      //this.getRoles();
+      this.getRoles();
     },
     methods: {
       edit(item) {
@@ -170,10 +170,10 @@
                 this.$message.error(fal)
               });
             } else {
-              this.$api.post('/role/save', {
+              this.$api.post('/sysRole/add', {
                 roleName: this.role.roleName,
                 roleRemark: this.role.roleRemark,
-                checkedSysMenuList: checkedMenus
+                //checkedSysMenuList: checkedMenus
               }, res => {
                 this.$message.success(res);
                 this.getRoles();
@@ -226,10 +226,10 @@
         })
       },
       getRoles() {
-        this.$api.get('/role/queryByPage', {pageSize: 10, pageIndex: this.currentPage}, res => {
-          if (res.roles.result) {
-            this.tableData = res.roles.result;
-            this.total = res.roles.totalCount;
+        this.$api.get('/sysRole/queryByPage', {pageSize: 10, pageIndex: this.currentPage}, res => {
+          if (res.records) {
+            this.tableData = res.records;
+            this.total = res.total;
           }
         }, fal => {
           this.$message.error(fal);
