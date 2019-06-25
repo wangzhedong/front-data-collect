@@ -302,7 +302,7 @@ export default {
                         this.$api.post(
                             '/sysuser/update',
                             {
-                                uname: this.userInfo.uname,
+                                userName: this.userInfo.userName,
                                 uemail: this.userInfo.uemail,
                                 tel: this.userInfo.tel,
                                 id: this.userInfo.id,
@@ -313,7 +313,7 @@ export default {
                                 this.getUsers();
                             },
                             fal => {
-                                this.$message.success(fal);
+                                this.$message.error(fal);
                             }
                         );
                     } else {
@@ -326,7 +326,7 @@ export default {
                                 this.getUsers();
                             },
                             fal => {
-                                this.$message.success(fal);
+                                this.$message.error(fal);
                             }
                         );
                     }
@@ -336,20 +336,20 @@ export default {
             });
         },
         resetPassword(data) {
-            this.$confirm('重置' + data.uname + '密码？', '重置密码', {
+            this.$confirm('重置' + data.userName + '密码？', '重置密码', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning',
             })
                 .then(() => {
                     this.$api.get(
-                        '/sysuser/resetPassword',
+                        '/sysUser/resetPassword',
                         { id: data.id },
                         success => {
                             this.$message.success(success);
                         },
                         fal => {
-                            this.$message.success(fal);
+                            this.$message.error(fal);
                         }
                     );
                 })
@@ -357,14 +357,14 @@ export default {
         },
         delUser(data) {
             console.log(data);
-            this.$confirm('删除用户：' + data.uname + '？', '删除', {
+            this.$confirm('删除用户：' + data.userName + '？', '删除', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning',
             })
                 .then(() => {
                     this.$api.get(
-                        '/sysuser/del',
+                        '/sysUser/del',
                         { id: data.id },
                         success => {
                             this.$message.success(success);
@@ -399,9 +399,10 @@ export default {
                 });
             });
 
-            let params = { userIds: userId, sysUserRoles: roles };
+            let params = { userIds: userId, sysRoles: roles };
+            console.log("params",params);
             this.$api.post(
-                '/sysuser/setRole',
+                '/sysUser/setRole',
                 params,
                 success => {
                     this.$message.success(success);
