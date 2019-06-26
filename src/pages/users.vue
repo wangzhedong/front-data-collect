@@ -5,7 +5,7 @@
         <el-button
           type="primary"
           size="medium"
-          @click="edit(checkedUser)"
+          @click="editRoles(checkedUser)"
           :disabled="checkedUser.length<=0"
         >批量绑定角色</el-button>
         <el-button type="primary" size="medium" @click="editUser">新增用户</el-button>
@@ -46,14 +46,14 @@
         <template slot-scope="scope">
           <span
             style="display: inline-block;margin: 2px 3px"
-            v-for="role in scope.row.roleIds"
-            :key="role.loginName"
-          >{{role.roleName}}</span>
+            v-for="userRole in scope.row.userRoles"
+            :key="userRole.id"
+          >{{userRole.roleName}}</span>
         </template>
       </el-table-column>
       <el-table-column fixed="right" label="操作" width="360px">
         <template slot-scope="scope">
-          <el-button type="text" @click="edit(scope.row)" size="small">修改绑定角色</el-button>
+          <el-button type="text" @click="editRoles(scope.row)" size="small">修改绑定角色</el-button>
           <el-button type="text" @click="editUser(scope.row)" size="small">修改用户信息</el-button>
           <el-button type="text" @click="resetPassword(scope.row)" size="small">重置密码</el-button>
           <el-button type="text" @click="delUser(scope.row)" size="small">删除</el-button>
@@ -98,8 +98,8 @@
               @change="col"
               size="small"
               v-for="role in allRoles"
-              :label="role.roleId"
-              :key="role.roleId"
+              :label="role.id"
+              :key="role.id"
             >{{role.roleName}}</el-checkbox>
           </el-checkbox-group>
         </div>
@@ -247,6 +247,7 @@ export default {
                     search: this.searchStr,
                 },
                 res => {
+                  console.log("page",res);
                     if (res.records) {
                         this.tableData = res.records;
                         this.total = res.total;
@@ -261,20 +262,20 @@ export default {
             this.currentPage = currentPage;
             this.getUsers();
         },
-        edit(items) {
+        editRoles(user) {
             this.showEditDialog();
-            if (!(items instanceof Array)) {
-                if (items.roleIds) {
+            if (user instanceof Object) {
+                if (user.userRoles) {
                     let c = [];
-                    items.roleIds.forEach(d => {
+                    user.userRoles.forEach(d => {
                         c.push(d.roleId);
                     });
                     this.checkedRoles = c;
                 }
-                this.editItem = [deepCopy(items)];
-            } else {
-                this.editItem = deepCopy(items);
-            }
+                this.editItem = [deepCopy(user)]
+            }else{
+              this.editItem = deepCopy(user)
+            } 
         },
         editUser(data) {
             this.userModel = true;
@@ -393,7 +394,7 @@ export default {
             let roles = [];
             this.allRoles.forEach(item => {
                 this.checkedRoles.forEach(checkRoleId => {
-                    if (item.roleId === checkRoleId) {
+                    if (item.id === checkRoleId) {
                         roles.push(item);
                     }
                 });
