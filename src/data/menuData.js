@@ -13,6 +13,7 @@ const menus = [
             { id: 'tplsum', name: 'tplsum', label: '报表汇总', icon: 'fa fa-info' }
         ]
     },
+    { id: '5', label: '模块管理', path: 'modules', icon: 'fa fa-bars' },
     { id: 'dept', label: '部门管理', path: 'dept', icon: 'fa fa-bars' },
     { id: 'setting', label: '设置', path: 'setting', icon: 'fa fa-bars' },
     { id: 'port', label: '端口扫描', path: 'port', icon: 'fa fa-bars' },

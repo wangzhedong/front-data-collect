@@ -44,11 +44,14 @@
       <el-table-column prop="tel" label="电话"></el-table-column>
       <el-table-column label="角色">
         <template slot-scope="scope">
-          <span
-            style="display: inline-block;margin: 2px 3px"
+          <el-tag style="margin: 2px 3px"
             v-for="userRole in scope.row.userRoles"
             :key="userRole.id"
-          >{{userRole.roleName}}</span>
+            type="success"
+            size="mini"
+            effect="dark">
+            {{ userRole.roleName }}
+          </el-tag>
         </template>
       </el-table-column>
       <el-table-column fixed="right" label="操作" width="360px">
@@ -75,35 +78,34 @@
         <div style="font-size: 18px;color: #333333;font-weight: bold;padding-bottom: 10px">角色绑定修改</div>
         <div class="form-item">
           用户：
-          <span
-            style="padding: 5px"
+          <el-tag style="margin: 2px 3px"
             v-for="user in editItem"
             :key="user.id"
-          >{{user ? user.userName: ''}}</span>
+            type="success"
+            size="mini"
+            effect="dark">
+            {{ user ? user.userName: '' }}
+          </el-tag>
         </div>
-        <!-- <div class="form-item">当前已选：
-          <div style="transition: all .5s" v-if="!!editItem">
-          <span style="display: inline-block;margin: 0 5px;" v-for="role in checkedRoles">{{role.roleName}}</span>
-          </div>
-        </div>-->
         <div class="form-item">
           <p style="padding:0 0 10px">所有角色：</p>
           <el-checkbox-group
-            style="padding: 5px 10px;box-shadow: 0px 0px 21px #ccc inset;"
+            size="mini"
+            fill="#67C23A"
+            style="padding: 5px 10px;"
             v-model="checkedRoles"
           >
-            <el-checkbox
-              style="margin: 5px"
+            <el-checkbox-button
               border
               @change="col"
               size="small"
               v-for="role in allRoles"
               :label="role.id"
               :key="role.id"
-            >{{role.roleName}}</el-checkbox>
+            >{{role.roleName}}</el-checkbox-button>
           </el-checkbox-group>
         </div>
-        <div style="text-align: center">
+        <div style="text-align: center;margin-top:50px;">
           <el-button @click="hideEditDialog">取消</el-button>
           <el-button @click="save" type="primary">保存</el-button>
         </div>
@@ -263,8 +265,9 @@ export default {
             this.getUsers();
         },
         editRoles(user) {
+          console.log(user);
             this.showEditDialog();
-            if (user instanceof Object) {
+            if (!Array.isArray(user)) {
                 if (user.userRoles) {
                     let c = [];
                     user.userRoles.forEach(d => {
@@ -301,7 +304,7 @@ export default {
                 if (valid) {
                     if (this.userInfo.id) {
                         this.$api.post(
-                            '/sysuser/update',
+                            '/sysUser/update',
                             {
                                 userName: this.userInfo.userName,
                                 uemail: this.userInfo.uemail,

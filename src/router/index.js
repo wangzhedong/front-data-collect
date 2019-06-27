@@ -20,6 +20,7 @@ export default new Router({
         {path: '/500', name: '500', component: page('500')},
         {path: '/users', name: 'users', component: page('users')},
         {path: '/roles', name: 'roles', component: page('roles')},
+        {path: '/modules', name: 'modules', component: page('modules')},
         {path: '/menus', name: 'menus', component: page('menus')},
         {path: '/tplmg', name: 'tplmg', component: page('tplmg')},
         {path: '/tplcheck', name: 'tplcheck', component: page('tplcheck')},
