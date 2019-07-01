@@ -21,15 +21,14 @@ export default new Router({
         {path: '/users', name: 'users', component: page('users')},
         {path: '/roles', name: 'roles', component: page('roles')},
         {path: '/modules', name: 'modules', component: page('modules')},
-        {path: '/menus', name: 'menus', component: page('menus')},
+        {path: '/depts', name: 'depts', component: page('depts')},
+        {path: '/rules', name: 'rules', component: page('rules')},
         {path: '/tplmg', name: 'tplmg', component: page('tplmg')},
         {path: '/tplcheck', name: 'tplcheck', component: page('tplcheck')},
         {path: '/tplsum', name: 'tplsum', component: page('tplsum')},
-        {path: '/port', name: 'port', component: page('port')}
       ]
     },
     {path: '/login', name: 'login', component: page('login')},
-    // pages
     {path: '/home-login', name: 'p-login', component: page('home-login')},
     {path: '/register', name: 'p-register', component: page('register')},
     {path: '*', redirect: {name: '404'}}
