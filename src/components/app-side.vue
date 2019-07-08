@@ -26,6 +26,7 @@ export default {
             if('home' === path ){
                  this.$router.push('/')
             }else{
+                //this.$router.replace({name:'组件B名称', params: {参数}}, () => { this.warning('test!') }, () => { this.warning('test!') }) 
                 this.$router.push('/'+path)
             }
         }

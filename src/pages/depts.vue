@@ -9,12 +9,11 @@
       <el-table-column label="规则">
         <template slot-scope="scope">
           <el-tag style="margin: 2px 3px"
-            v-for="deptRule in scope.row.deptRules"
-            :key="deptRule.id"
+            v-if="scope.row.excelRule"
             type="success"
             size="mini"
             effect="dark">
-            {{ deptRule.ruleName }}
+            {{ scope.row.excelRule.ruleName }}
           </el-tag>
         </template>
       </el-table-column>
@@ -40,14 +39,13 @@
         <el-form-item label="部门编号" prop="deptNo">
           <el-input maxlength="16" v-model="deptInfo.deptNo" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="选择规则" prop="ruleIds">
-          <el-checkbox-group v-model="deptInfo.ruleIds">
-            <el-checkbox
-              v-for="deptRule in allDeptRules"
-              :label="deptRule.id"
-              :key="deptRule.id"
-            >{{deptRule.ruleName}}</el-checkbox>
-          </el-checkbox-group>
+        <el-form-item label="选择规则">
+        <el-radio-group v-model="deptInfo.ruleId" size="small">
+          <el-radio-button 
+            v-for="rule in allDeptRules"
+            :label="rule.id"
+            :key="rule.id">{{rule.ruleName}}</el-radio-button>
+          </el-radio-group>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -68,7 +66,7 @@ export default {
               id:'',
               deptName:'',
               deptNo:'',
-              ruleIds: [],
+              ruleId: '',
             },
             allDeptRules: [],
             rules: {
@@ -96,14 +94,14 @@ export default {
                         trigger: 'blur',
                     },
                 ],
-                ruleIds: [
+               /*  ruleIds: [
                     {
                         type: 'array',
                         required: true,
                         message: '请至少选择一条规则',
                         trigger: 'change',
                     },
-                ],
+                ], */
             },
             currentPage: 1,
             searchStr: '',
@@ -111,6 +109,7 @@ export default {
         };
     },
     mounted() {
+      console.log('初始化');
         this.queryByPage();
     },
     methods: {
@@ -143,13 +142,7 @@ export default {
           this.isOpen = true;
           if(data){
             for(let key in this.deptInfo){
-              if(key ==='ruleIds'){
-                data.deptRules.forEach(item => {
-                  this.deptInfo.ruleIds.push(item.ruleId)
-                });
-              }else{
-                this.deptInfo[key] = data[key];
-              }
+              this.deptInfo[key] = data[key];
             }
           }
         },

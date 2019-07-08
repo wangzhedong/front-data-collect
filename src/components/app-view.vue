@@ -63,7 +63,6 @@ export default {
         AppSide,
     },
     mounted:function(){
-      console.log('this.route', this.$route);
       //this.$router.push('/users')
 
     },
