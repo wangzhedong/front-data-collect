@@ -5,16 +5,16 @@
     </el-row>
     <el-table height="350" :data="tableData" style="width: 100%;">
       <el-table-column prop="ruleName" label="规则名称"></el-table-column>
-      <el-table-column label="规则明细">
+      <el-table-column label="关键字">
         <template slot-scope="scope">
           <el-tag
             style="margin: 2px 3px"
-            v-for="(detail,index) in scope.row.ruleDetail"
+            v-for="(detail,index) in JSON.parse(scope.row.ruleDetail)"
             :key="index"
             type="success"
             size="mini"
             effect="dark"
-          >{{ detail }}</el-tag>
+          >{{ detail.keyword }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column fixed="right" label="操作" width="360px">
@@ -32,22 +32,36 @@
       :close-on-click-modal="false"
       :visible.sync="isOpen"
     >
-      <el-form :model="ruleInfo" ref="ruleForm" :rules="rules" label-width="100px">
-        <el-form-item label="规则名称" prop="ruleName">
+      <el-form :model="ruleInfo" ref="ruleForm" label-width="100px">
+        <el-form-item label="规则名称" 
+            prop="ruleName"
+            :rules="[
+                {required: true,message: '请输入规则名称',trigger: 'blur'},
+                {pattern: /^\S+$/,message: '规则名必须为非空字符串',trigger: 'blur'}
+            ]"
+            >
           <el-input maxlength="16" v-model="ruleInfo.ruleName"></el-input>
         </el-form-item>
         <div v-for="(detail,index) in ruleInfo.ruleDetail"
             :key="index">
             <el-form-item
-                v-if="index == 0" 
-                label="规则明细" 
-                prop="ruleDetail">
-            <el-input style="width:75%" maxlength="16" v-model="ruleInfo.ruleDetail"></el-input>
-            <el-button @click="addDetail">新增明细</el-button>
+                v-if="index == 0"
+                :prop="'ruleDetail.' + index + '.keyword'"
+                :rules="{
+                    required: true, message: '关键字不能为空', trigger: 'blur'
+                }" 
+                :label="'关键字'+(index+1)">
+            <el-input style="width:70%" maxlength="16" v-model="detail.keyword"></el-input>
+            <el-button @click="addDetail">新增关键字</el-button>
             </el-form-item> 
-            <el-form-item v-else label="" prop="ruleDetail">
-                <el-input style="width:75%" maxlength="16" v-model="ruleInfo.ruleDetail"></el-input>
-                <el-button @click="delDetail">删除明细</el-button>
+            <el-form-item v-else  
+                :prop="'ruleDetail.' + index + '.keyword'"
+                :rules="{
+                    required: true, message: '关键字不能为空', trigger: 'blur'
+                }"
+                :label="'关键字'+(index+1)">
+                <el-input style="width:70%" maxlength="16" v-model="detail.keyword"></el-input>
+                <el-button @click="delDetail(index)">删除关键字</el-button>
             </el-form-item>
         </div>
       </el-form>
@@ -68,34 +82,7 @@ export default {
             ruleInfo: {
                 id: '',
                 ruleName: '',
-                ruleDetail: [''],
-            },
-            rules: {
-                ruleName: [
-                    {
-                        required: true,
-                        message: '请输入规则名称',
-                        trigger: 'blur',
-                    },
-                    {
-                        pattern: /^\S+$/,
-                        message: '规则名必须为非空字符串',
-                        trigger: 'blur',
-                    },
-                ],
-               /*  deptNo: [
-                    {
-                        required: true,
-                        message: '请输入部门编号',
-                        trigger: 'blur',
-                    },
-                    {
-                        pattern: /^[\w\d]+$/,
-                        message: '部门编号不正确',
-                        trigger: 'blur',
-                    },
-                ], */
-               
+                ruleDetail: [{keyword:''}],
             },
             currentPage: 1,
             searchStr: '',
@@ -129,16 +116,20 @@ export default {
             this.isOpen = true;
         },
         addDetail(){
-            this.ruleInfo.ruleDetail.push('');
+            this.ruleInfo.ruleDetail.push({keyword:''});
         },
-        delDetail(){
-
+        delDetail(index){
+            this.ruleInfo.ruleDetail.splice(index, 1)
         },
         openEdit(data) {
             this.isOpen = true;
             if (data) {
                 for (let key in this.ruleInfo) {
-                    this.ruleInfo[key] = data[key];
+                    if(key ==='ruleDetail'){
+                        this.ruleInfo[key] = JSON.parse(data[key])
+                    }else{
+                        this.ruleInfo[key] = data[key];
+                    }
                 }
             }
         },
@@ -150,29 +141,29 @@ export default {
         addOrUpdate() {
             this.$refs.ruleForm.validate(valid => {
                 if (valid) {
+                    let data = {};
+                    for(let key in this.ruleInfo){
+                        if(key === 'ruleDetail'){
+                            data[key] = JSON.stringify(this.ruleInfo[key])
+                        }else{
+                            data[key] = this.ruleInfo[key]
+                        }
+                    }
                     if (this.ruleInfo.id) {
-                        this.$api.post(
-                            '/rule/update',
-                            this.ruleInfo,
-                            success => {
+                        this.$api.post('/rule/update',data,success => {
                                 this.$message.success(success);
                                 this.closeDialog();
                                 this.queryByPage();
-                            },
-                            fal => {
+                            }, fal => {
                                 this.$message.error(fal);
                             }
                         );
                     } else {
-                        this.$api.post(
-                            '/rule/add',
-                            this.ruleInfo,
-                            success => {
+                        this.$api.post('/rule/add',data,success => {
                                 this.$message.success(success);
                                 this.closeDialog();
                                 this.queryByPage();
-                            },
-                            fal => {
+                            },fal => {
                                 this.$message.error(fal);
                             }
                         );
